@@ -1,0 +1,33 @@
+name: Scheduled Welcome Job
+
+on:
+  schedule:
+    - cron: '*/2 * * * *'  # Every 5 minutes
+  workflow_dispatch:       # Manual trigger option
+
+jobs:
+  send-welcome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔔 Call /send-welcome endpoint
+        id: call_api
+        run: |
+          RESPONSE=$(curl -s -X POST ${{ secrets.API_URL }}/send-welcome \
+            -H "Content-Type: application/json" \
+            -d '{}')
+
+          echo "Response: $RESPONSE"
+          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+
+      - name: 💬 Send result to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "*Scheduled Welcome Triggered* 🎉\nResponse:\n${{ steps.call_api.outputs.response }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+

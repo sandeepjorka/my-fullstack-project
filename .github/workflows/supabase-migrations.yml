@@ -1,0 +1,31 @@
+name: Apply Supabase Migrations
+
+on:
+  push:
+    paths:
+      - 'supabase/migrations/**'
+    branches: [master]
+
+jobs:
+  push-migrations:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: supabase
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Supabase CLI
+        run: |
+          npm install -g supabase
+
+      - name: Set Supabase access token
+        run: supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Link Supabase project
+        run: supabase link --project-ref eemifjwemysfiezogbqc
+
+      - name: Push migrations
+        run: supabase db push
