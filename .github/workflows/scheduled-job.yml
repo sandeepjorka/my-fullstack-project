@@ -24,10 +24,8 @@ jobs:
         if: success()
         uses: slackapi/slack-github-action@v1.24.0
         with:
-          payload: |
-            {
-              "text": "*Scheduled Welcome Triggered* 🎉\nResponse:\n${{ steps.call_api.outputs.response }}"
-            }
+          payload: ${{ toJson(format('🎉 *Scheduled Welcome Triggered*\n\nResponse:\n{0}', steps.call_api.outputs.response)) }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+             
