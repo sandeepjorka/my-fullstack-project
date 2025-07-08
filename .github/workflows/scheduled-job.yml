@@ -1,31 +1,25 @@
-name: Scheduled Welcome Job
+name: Scheduled Job - Call Backend API and Notify Slack
 
 on:
   schedule:
-    - cron: '*/2 * * * *'  # Every 5 minutes
-  workflow_dispatch:       # Manual trigger option
+    - cron: '*/ * * * *'  # Every 5 minutes
+  workflow_dispatch:
 
 jobs:
-  send-welcome:
+  ping_and_notify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔔 Call /send-welcome endpoint
+      - name: 🔁 Call /users endpoint
         id: call_api
         run: |
-          RESPONSE=$(curl -s -X POST ${{ secrets.API_URL }}/send-welcome \
-            -H "Content-Type: application/json" \
-            -d '{}')
-
-          echo "Response: $RESPONSE"
+          RESPONSE=$(curl -s https://kjf8j25tbf.us-east-1.awsapprunner.com/users)
+          echo "Fetched users: $RESPONSE"
           echo "response=$RESPONSE" >> $GITHUB_OUTPUT
 
-      - name: 💬 Send result to Slack
-        if: success()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: ${{ toJson(format('🎉 *Scheduled Welcome Triggered*\n\nResponse:\n{0}', steps.call_api.outputs.response)) }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+     - name: 📣 Send Slack message
+       run: |
+         curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"✅ Scheduled Job Ran at $(date '+%Y-%m-%d %H:%M:%S')\nResponse: ${{ steps.call_api.outputs.response }}\"}" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
-            
