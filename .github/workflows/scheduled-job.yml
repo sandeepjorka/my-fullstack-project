@@ -2,8 +2,8 @@ name: Scheduled Job - Send Users to Slack
 
 on:
   schedule:
-    - cron: '*/2 * * * *'  # Runs every 5 minutes
-  workflow_dispatch:        # Also lets you trigger manually
+    - cron: '*/2 * * * *'  # Every 5 minutes
+  workflow_dispatch:
 
 jobs:
   send_users_to_slack:
@@ -13,17 +13,16 @@ jobs:
       - name: 📡 Call /users endpoint
         id: get_users
         run: |
-          RESPONSE=$(curl -s https://kjf8j25tbf.us-east-1.awsapprunner.com/users)
-          echo "response<<EOF" >> $GITHUB_OUTPUT
-          echo "$RESPONSE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          RESPONSE=$(curl -s https://your-app-runner-url.amazonaws.com/users)
+          CLEANED=$(echo "$RESPONSE" | jq -Rs .)
+          echo "response=$CLEANED" >> $GITHUB_OUTPUT
 
       - name: 📩 Post to Slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "*👥 Scheduled Users List*\n```${{ steps.get_users.outputs.response }}```"
+              "text": "*👥 Scheduled Users List*\n ${{ fromJson(steps.get_users.outputs.response) }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
