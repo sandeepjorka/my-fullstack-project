@@ -5,7 +5,7 @@ import AddUser from './AddUser';
 function App() {
   return (
     <div className="App">
-      <h1>🚀 Powered Retail AI</h1>
+      <h1>🚀 Jorka sandeep kumar</h1>
       <AddUser />
       <hr />
       <Users />
