@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # or whatever version your project needs
+          node-version: '20' # or whatever version your project needs
 
       - name: Install dependencies
         working-directory: ./frontend
