@@ -1,0 +1,30 @@
+name: Scheduled Users Notification
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Run every 5 minutes
+
+jobs:
+  send-users:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔁 Fetch users from /users endpoint
+        id: fetch_users
+        run: |
+          RESPONSE=$(curl -s "${{ secrets.API_URL }}/users")
+          echo "Fetched: $RESPONSE"
+          echo "response<<EOF" >> $GITHUB_ENV
+          echo "$RESPONSE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: 💬 Send users to Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "*👥 Users List (Auto Every 5 Mins)*\n```json\n${{ env.response }}\n```"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
