@@ -13,7 +13,7 @@ jobs:
       - name: 📡 Call /users endpoint
         id: get_users
         run: |
-          RESPONSE=$(curl -s https://your-app-runner-url.amazonaws.com/users)
+          RESPONSE=$(curl -s https://kjf8j25tbf.us-east-1.awsapprunner.com/users)
           CLEANED=$(echo "$RESPONSE" | jq -Rs .)
           echo "response=$CLEANED" >> $GITHUB_OUTPUT
 
