@@ -5,7 +5,7 @@ import AddUser from './AddUser';
 function App() {
   return (
     <div className="App">
-      <h1>🚀 MR RAJ </h1>
+      <h1>🚀 jorka sandeep kumar </h1>
       <AddUser />
       <hr />
       <Users />
